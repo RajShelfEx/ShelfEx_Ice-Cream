@@ -1,0 +1,7 @@
+roboflow
+ultralytics
+opencv-python
+pillow
+Flask
+requests
+gdown
