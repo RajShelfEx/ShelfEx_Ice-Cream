@@ -35,10 +35,9 @@ OUTPUT_IMAGE_SIZE = 720
 
 # Download Model weights
 # Example usage
-ROW_MODEL_URL = 'https://drive.google.com/file/d/18v-cfpOfN2MBPqeJSUUW1OKCCCh2XoxN/view?usp=sharing'
-SECTION_MODEL_URL = 'https://drive.google.com/uc?id=16BnnDI-wrfRZQwHK-1kOUtZ7GSo3PGCz'
-PRODUCT_SEG_MODEL_URL = 'https://drive.google.COM/uc?id=1-1Q6J9Z'
-PRODUCT_MODEL_URL = 'https://drive.google.com/uc?id=16BnnDI-wrfRZQwHK-1kOUtZ7GSo3PGCz' 
+ROW_MODEL_URL = 'https://drive.google.com/file/d/1bPX5sgP8vAYtRzwrGJ2OJrmci2_l9P3S/view?usp=sharing'
+SECTION_MODEL_URL = 'https://drive.google.com/file/d/13zTs3dXq1ky0o0QU99qzW4qMm1yiEOWz/view?usp=sharing'
+PRODUCT_SEG_MODEL_URL = 'https://drive.google.com/file/d/1ttVcFWfqVwQbSFU9AOtYwVyTtQFmpovj/view?usp=sharing'
 DOWNLOAD_ROW_MODEL_PATH = 'data/row.zip'  # Local path for the downloaded zip file
 DOWNLOAD_SECTION_MODEL_PATH = 'data/section.zip'  # Local path for the downloaded zip file
 DOWNLOAD_PRODUCT_SEG_MODEL_PATH = 'data/product_seg.zip'  # Local path for the downloaded zip file
