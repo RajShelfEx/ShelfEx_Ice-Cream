@@ -46,4 +46,3 @@ DOWNLOAD_PRODUCT_MODEL_PATH = 'data/product.zip'  # Local path for the downloade
 EXTRACT_ROW_MODEL_DIR = 'data/checkpoints/row_wise_weight/'  # Directory where the zip file should be extracted 
 EXTRACT_SECTION_MODEL_DIR = 'data/checkpoints/section_wise_weight/'  # Directory where the zip file should be extracted
 EXTRACT_PRODUCT_SEG_MODEL_DIR = 'data/checkpoints/product_wise_weight/'  # Directory where the zip file should be extracted
-EXTRACT_PRODUCT_MODEL_DIR = 'data/checkpoints/product_detection_weight/'  # Directory where the zip file should be extracted

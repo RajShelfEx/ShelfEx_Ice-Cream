@@ -5,3 +5,5 @@ pillow
 Flask
 requests
 gdown
+flask-cors
+gunicorn

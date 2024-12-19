@@ -11,19 +11,21 @@ from flask import Flask, request, jsonify
 from utils import download_and_unzip,modelsConfig
 from mainPipeline import Result
 from config import FINAL_OUTPUT_DIR
+from flask_cors impor CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # ******************************** CHECK MODEL DIRECTORY EXIST OR NOT *****************************
-# modelWeightsDir = config.MODEL_WEIGHTS_DIR
-# if not os.path.exists(modelWeightsDir):
-#     # Loop through each model and download/unzip if necessary
-#     for model in modelsConfig:
-#         download_and_unzip(
-#             model_url=model["url"],
-#             output_path=model["download_path"],
-#             extract_to=model["extract_path"],
-#         )
+modelWeightsDir = config.MODEL_WEIGHTS_DIR
+if not os.path.exists(modelWeightsDir):
+    # Loop through each model and download/unzip if necessary
+    for model in modelsConfig:
+        download_and_unzip(
+            model_url=model["url"],
+            output_path=model["download_path"],
+            extract_to=model["extract_path"],
+        )
 # **************************************************************************************************
 
 productRecognition = Result()
