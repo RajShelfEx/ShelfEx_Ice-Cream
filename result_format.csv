@@ -1,0 +1,16 @@
+Bin,Bin_Occupancy,SKU_Detection,SKU_Name
+A1,75 %,Yes,Filur-54-ml
+A2,25 %,Yes,Solero-Exotic-90-ml
+A3,50 %,Yes,Solero-Exotic-90-ml
+A4,25 %,Yes,Not Identified
+A5,25 %,Yes,Not Identified
+B1,50 %,Yes,HB-Pineapple-Split-75-ml
+B2,75 %,Yes,HB-Pineapple-Split-75-ml
+B3,75 %,Yes,Zapp-58-ml
+B4,Nil,No,N.A
+B5,75 %,Yes,Not Identified
+C1,75 %,Yes,Green-Fresh
+C2,75 %,Yes,Green-Fresh
+C3,75 %,Yes,Nogger-Classic-88
+C4,50 %,Yes,Cornetto-Soft-Stracciatella
+C5,Nil,No,N.A

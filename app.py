@@ -7,6 +7,8 @@ import requests
 import subprocess
 from flask import Flask, request, jsonify
 from utils import download_and_unzip,modelsConfig, checkDir
+from utils import save_to_csv , csv_to_dict  # save_to_csv is a function
+from SKUs import resuit_format # resuit_format is a dictionary
 from mainPipeline import Result
 from config import FINAL_OUTPUT_DIR
 from flask_cors import CORS
@@ -103,30 +105,35 @@ def shelfEx():
 
                 ############################ DETECTION PROCESS #################################
                 detectionResult = productRecognition.main()
-                print(detectionResult)
-                ####################### SINGLE BOTTLE DETECTION PROCESS ###########################
-                # finalResult = obj_singleBottle_detection_process.PredictAllBottlesBoundingBoxes(detectionResult)
-                logging.info(f'Detection Results: {detectionResult}')
+                # print(detectionResult)
+                ####################### MODIFY THE RESULT IN TABULAR-FORM ###########################
+                # take result format dict
+                final_image_result = resuit_format.copy()
+                # update result format dict according to detection result
+                for key, value in detectionResult.items():
+                    if key != "image":
+                        bin_name = key.split("-")[0]
+                        bin_occ = key.split("-")[1]
+                        sku_name = value
+                        index = resuit_format["Bin"].index(bin_name)
+                        # update result
+                        final_image_result["Bin_Occupancy"][index] = f"{bin_occ} %"
+                        final_image_result["SKU_Detection"][index] = "Yes"
+                        # if sku_name == "Product is blured or not in SKU List!":
+                        #     final_image_result["SKU_Name"][index] = "Not Identified"
+                        final_image_result["SKU_Name"][index] = sku_name
+                
+                # create csv file
+                save_to_csv(final_image_result, "result_format.csv")
+                # Example usage
+                csv_file = "result_format.csv"  # Replace with the actual file path
+                final_result_dict = csv_to_dict(csv_file)
+                logging.info(f'Detection Results: {final_result_dict}')
                 ############################### FINAL RESULTS ################################
 
-                # # convert output image-with-label into base64 
-                # outputImagePathWithLabel = f"{finalOutputDir}/{imageName}"
-                # encodedImage = imageToBase64(outputImagePathWithLabel)
-                # detectionResult["imageWithLabel"] = encodedImage
-
-                # # convert output image-without-label into base64
-                imgName = imageName.split(".")[0]
-                imgFormat = imageName.split(".")[-1]
-                outputImagePath = f"{FINAL_OUTPUT_DIR}/{imgName}.{imgFormat}"
-                encodedImage = imageToBase64(outputImagePath)
-
-                detection["Input-Image"] = encodedImage
-                detection["result"] = detectionResult
-                # Add Result in finalResult
                 encodedInputImage = imageToBase64(inputImage)
-                detectionResult['image'] = encodedInputImage
-                detectionResult['image_with_label'] = encodedImage
-                finalResult.append(detectionResult)
+                final_result_dict['image'] = encodedInputImage
+                finalResult.append(final_result_dict)
 
             totalTime = time.time() - start
             logging.info(f'Detection Time : {totalTime}')

@@ -190,7 +190,7 @@ def checkDir(dirPath):
             logging.error(f"Failed to delete contents of {dirPath}. Reason: {e}")
 
 
-def save_to_csv(data_dict, file_name="data/result_format.csv"):
+def save_to_csv(data_dict, file_name="result_format.csv"):
     """
     Saves a dictionary of data to a CSV file.
 

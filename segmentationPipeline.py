@@ -167,7 +167,7 @@ class segmentation:
                     SkuNames = productSku[skuIndex[0]]
                 except Exception as e:
                     logger.error(f"Error in getting SKU Name: {e}")
-                    SkuNames = "Product is blured or not in SKU List!"
+                    SkuNames = "Not Identified"
 
                 all_detection_results[imageName.split('.')[0]] = SkuNames
                 # Store unique masks

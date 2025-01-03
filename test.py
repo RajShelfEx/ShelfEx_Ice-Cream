@@ -44,7 +44,7 @@ for key, value in detectionResult.items():
         
 
 # Call the function
-save_to_csv(final_image_result, "data/result_format.csv")
+save_to_csv(final_image_result, "result_format.csv")
 # Example usage
 csv_file = "data/result_format.csv"  # Replace with the actual file path
 final_result_dict = csv_to_dict(csv_file)
