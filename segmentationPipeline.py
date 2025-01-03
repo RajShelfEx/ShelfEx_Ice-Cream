@@ -2,8 +2,8 @@ import os
 import logging
 import numpy as np
 import cv2
-from ultralytics import YOLO  
-import config 
+from ultralytics import YOLO
+import config
 from data.SKUs import rowSku, sectionSku, productSku
 
 logger = logging.getLogger(__name__)
@@ -55,9 +55,9 @@ class segmentation:
             mask_binary = (mask_np > 0.5).astype(np.uint8)
             mask_resized = cv2.resize(mask_binary, (orig_img.shape[1], orig_img.shape[0]))
             processed_masks.append((mask_resized, class_name))
-        
-        return orig_img, processed_masks,confidences, SkuIndexes
 
+        return orig_img, processed_masks,confidences, SkuIndexes
+    
     def rowWiseSegmentation(self):
         os.makedirs(self.rowImageDir, exist_ok=True)
 
@@ -137,7 +137,6 @@ class segmentation:
                     # Save the updated processed masks for the current image
                     filtered_processed_masks[imageName] = updated_processed_masks
             return filtered_processed_masks
-
     
     def productSegmentation(self, section_dict):
         """
@@ -168,7 +167,7 @@ class segmentation:
                     SkuNames = productSku[skuIndex[0]]
                 except Exception as e:
                     logger.error(f"Error in getting SKU Name: {e}")
-                    SkuNames = "invisibility"
+                    SkuNames = "Product is blured or not in SKU List!"
 
                 all_detection_results[imageName.split('.')[0]] = SkuNames
                 # Store unique masks
@@ -211,3 +210,4 @@ class segmentation:
                     logging.info(f"Saved segmented image for SKU '{class_name}' at: {output_path}")
 
         return  all_detection_results
+                                      
