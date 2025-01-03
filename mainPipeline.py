@@ -5,7 +5,6 @@ from ultralytics import YOLO
 from collections import Counter
 import numpy as np
 from segmentationPipeline import segmentation
-from temp.detectionPipeline import detection
 import config
 import shutil
 
@@ -17,7 +16,7 @@ class Result:
         self.input_dir = config.INPUT_IMAGES_DIR
         self.row_dir = config.ROW_WISE_IMAGES_DIR
         self.section_dir = config.SECTION_WISE_IMAGES_DIR
-        self.product_dir = config.PRODUCT_WISE_IMAGES_DIR 
+        self.product_dir = config.PRODUCT_WISE_IMAGES_DIR
         self.final_output_dir = config.FINAL_OUTPUT_DIR
 
     def clear_directories(self):
@@ -46,7 +45,7 @@ class Result:
         mask_data_list = []
         for key, value in section_dict.items():
             mask_data_list.append(value)
-        
+
         # Ensure the output directory exists
         if not os.path.exists(self.final_output_dir):
             os.makedirs(self.final_output_dir)
@@ -77,6 +76,14 @@ class Result:
         # Process the predicted masks
         color_index = 0
         for mask in mask_data_list:  # Process each mask for the current image
+        # Create a color mask for the current mask
+            num_colors = 256  # Max colors
+        colors = [
+            tuple(np.random.choice(range(256), size=3)) for _ in range(num_colors)
+        ]
+        # Process the predicted masks
+        color_index = 0
+        for mask in mask_data_list:  # Process each mask for the current image
             # Create a color mask for the current mask
             mask_color = np.zeros_like(image)
             color = colors[color_index % len(colors)]  # Cycle through colors
@@ -91,7 +98,8 @@ class Result:
 
 
         # Save the result
-        output_path = os.path.join(self.final_output_dir, "outputImage.jpg")
+        imageName = image_path.split('/')[-1]
+        output_path = os.path.join(self.final_output_dir, imageName)
         cv2.imwrite(output_path, overlayed_image)
         print(f"Saved: {output_path}")
         return section_dict
@@ -106,15 +114,14 @@ class Result:
         output=self.segment.productSegmentation(section_dict)
         return output
 
-    
-    
+
+
 
 
 if __name__ == "__main__":
     # Initialize the Result class
-     
+
     res = Result()
     res.clear_directories()
     # Run the main function
     print(res.main())
-    
