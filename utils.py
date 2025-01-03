@@ -1,5 +1,7 @@
 import cv2
 import os
+import csv
+import pandas as pd
 import logging
 import shutil
 import random
@@ -186,3 +188,51 @@ def checkDir(dirPath):
             logging.info(f'Cleared contents of the directory: {dirPath}')
         except Exception as e:
             logging.error(f"Failed to delete contents of {dirPath}. Reason: {e}")
+
+
+def save_to_csv(data_dict, file_name="data/result_format.csv"):
+    """
+    Saves a dictionary of data to a CSV file.
+
+    Parameters:
+    - data_dict (dict): The dictionary containing the data.
+    - file_name (str): The name of the output CSV file. Default is 'result_format.csv'.
+    """
+    try:
+        with open(file_name, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=data_dict.keys())
+            
+            # Write header
+            writer.writeheader()
+            
+            # Write rows
+            for i in range(len(data_dict["Bin"])):
+                row = {key: data_dict[key][i] for key in data_dict}
+                writer.writerow(row)
+        
+        print(f"CSV file '{file_name}' created successfully.")
+    except Exception as e:
+        print(f"Failed to create CSV file. Error: {e}")
+
+
+def csv_to_dict(csv_file):
+    """
+    Reads a CSV file and creates a dictionary with the bin name as the key
+    and a list of [Bin_Occupancy, SKU_Detection, SKU_Name] as the value.
+
+    Parameters:
+    - csv_file (str): Path to the CSV file.
+
+    Returns:
+    - dict: A dictionary in the format {"A1": ["75%", "Yes", "SKU_Name"]}.
+    """
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(csv_file)
+    
+    # Create the dictionary
+    bin_dict = {
+        row["Bin"]: [row["Bin_Occupancy"], row["SKU_Detection"], row["SKU_Name"]]
+        for _, row in df.iterrows()
+    }
+    
+    return bin_dict
