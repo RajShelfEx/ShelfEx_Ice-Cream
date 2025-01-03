@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 import config
-from data.SKUs import rowSku, sectionSku, productSku
+from SKUs import rowSku, sectionSku, productSku
 
 logger = logging.getLogger(__name__)
 class segmentation:

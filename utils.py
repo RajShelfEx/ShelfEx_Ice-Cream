@@ -1,9 +1,11 @@
 import cv2
 import os
+import logging
+import shutil
 import random
 import gdown
 import config
-from data.SKUs import productSku,productSkuList,competitorsSkuList
+from SKUs import productSku,productSkuList,competitorsSkuList
 import logging
 import zipfile
 logger = logging.getLogger(__name__)
@@ -155,8 +157,32 @@ modelsConfig = [
         "extract_path": config.EXTRACT_SECTION_MODEL_DIR,
     },
     {
-        "url": config.PRODUCT_MODEL_URL,
+        "url": config.PRODUCT_SEG_MODEL_URL,
         "download_path": config.DOWNLOAD_PRODUCT_MODEL_PATH,
-        "extract_path": config.EXTRACT_PRODUCT_MODEL_DIR,
+        "extract_path": config.EXTRACT_PRODUCT_SEG_MODEL_DIR,
     },
 ]
+
+
+
+def checkDir(dirPath):
+    ####################### IMAGE DIRECTORY ###########################
+    
+    # Check if the directory exists
+    if not os.path.exists(dirPath):
+        os.makedirs(dirPath)
+        logging.info(f'Created directory: {dirPath}')
+    else:
+        logging.info(f'Directory already exists: {dirPath}')
+        
+        try:
+            # Remove all contents of the directory
+            for filename in os.listdir(dirPath):
+                file_path = os.path.join(dirPath, filename)
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)  # Remove file or symbolic link
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)  # Remove directory
+            logging.info(f'Cleared contents of the directory: {dirPath}')
+        except Exception as e:
+            logging.error(f"Failed to delete contents of {dirPath}. Reason: {e}")

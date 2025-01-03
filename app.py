@@ -1,14 +1,12 @@
 import os
-import cv2
 import time
 import base64
 import config
 import logging
 import requests
-import platform
 import subprocess
 from flask import Flask, request, jsonify
-from utils import download_and_unzip,modelsConfig
+from utils import download_and_unzip,modelsConfig, checkDir
 from mainPipeline import Result
 from config import FINAL_OUTPUT_DIR
 from flask_cors import CORS
@@ -19,6 +17,7 @@ CORS(app)
 # ******************************** CHECK MODEL DIRECTORY EXIST OR NOT *****************************
 modelWeightsDir = config.MODEL_WEIGHTS_DIR
 if not os.path.exists(modelWeightsDir):
+    checkDir("data")
     # Loop through each model and download/unzip if necessary
     for model in modelsConfig:
         download_and_unzip(
@@ -51,25 +50,6 @@ def clearLoggerFile():
             # Optional: Log that the log file was cleared
             logger.info("Log file exceeded 500 KB and was cleared.")
 
-def checkDir(dirPath):
-    ####################### IMAGE DIRECTORY ###########################
-
-    # Check if InputImage directory exists, if not create it
-    if not os.path.exists(dirPath):
-        os.makedirs(dirPath)
-        logging.info(f'Created directory: {dirPath}')
-    else:
-        logging.info(f'Directory already exists: {dirPath}')
-        try:
-            # Determine the OS and run the appropriate command
-            if platform.system() == 'Windows':
-                command = f'rmdir /S /Q "{dirPath}" && mkdir "{dirPath}"'
-            else:
-                command = f'rm -rf {dirPath}/*'
-            subprocess.run(command, shell=True, check=True)
-
-        except subprocess.CalledProcessError as e:
-            logging.info(f"Failed to delete contents of {dirPath}. Reason: {e}")
 
 def imageToBase64(outputImagePath):
     """
@@ -96,10 +76,14 @@ def shelfEx():
             # check input image dir
             inputImageDir = config.INPUT_IMAGES_DIR
             checkDir(inputImageDir)
-
-            # # check save image dir
-            # saveImageDir = config.DETECTED_IMAGE_DIR
-            # checkDir(saveImageDir)
+            # check row-wise image dir
+            checkDir(config.ROW_WISE_IMAGES_DIR)
+            # check section-wise image dir
+            checkDir(config.SECTION_WISE_IMAGES_DIR)
+            # check product-wise image dir
+            checkDir(config.PRODUCT_WISE_IMAGES_DIR)
+            # check finaloutput image dir
+            checkDir(config.FINAL_OUTPUT_DIR)
 
             finalResult = []
             detection = {}
