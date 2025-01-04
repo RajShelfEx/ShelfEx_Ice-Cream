@@ -1,8 +1,5 @@
 import os
 import cv2
-from PIL import Image
-from ultralytics import YOLO
-from collections import Counter
 import numpy as np
 from segmentationPipeline import segmentation
 import config
@@ -20,7 +17,12 @@ class Result:
         self.final_output_dir = config.FINAL_OUTPUT_DIR
 
     def clear_directories(self):
-        directories = [self.row_dir, self.section_dir, self.product_dir, self.final_output_dir]
+        directories = [
+            self.row_dir,
+            self.section_dir,
+            self.product_dir,
+            self.final_output_dir,
+        ]
         for directory in directories:
             for filename in os.listdir(directory):
                 file_path = os.path.join(directory, filename)
@@ -30,7 +32,7 @@ class Result:
                     elif os.path.isdir(file_path):
                         shutil.rmtree(file_path)
                 except Exception as e:
-                    print(f'Failed to delete {file_path}. Reason: {e}')
+                    print(f"Failed to delete {file_path}. Reason: {e}")
 
     def Save_output_image(self, mask_data_dict):
         # create dictionary of section name and mask
@@ -54,7 +56,7 @@ class Result:
         files = os.listdir(self.input_dir)
 
         # Filter out non-image files (you can add more formats if needed)
-        image_file = [f for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        image_file = [f for f in files if f.lower().endswith((".png", ".jpg", ".jpeg"))]
 
         # Get the image path
         image_path = os.path.join(self.input_dir, image_file[0])
@@ -64,7 +66,6 @@ class Result:
         if image is None:
             print(f"Error: Unable to load image {image_path}")
             return
-
 
         colored_canvas = np.zeros_like(image)
 
@@ -76,7 +77,7 @@ class Result:
         # Process the predicted masks
         color_index = 0
         for mask in mask_data_list:  # Process each mask for the current image
-        # Create a color mask for the current mask
+            # Create a color mask for the current mask
             num_colors = 256  # Max colors
         colors = [
             tuple(np.random.choice(range(256), size=3)) for _ in range(num_colors)
@@ -96,26 +97,21 @@ class Result:
         # Overlay the colored canvas on the original image
         overlayed_image = cv2.addWeighted(image, 0.7, colored_canvas, 0.3, 0)
 
-
         # Save the result
-        imageName = image_path.split('/')[-1]
+        imageName = image_path.split("/")[-1]
         output_path = os.path.join(self.final_output_dir, imageName)
         cv2.imwrite(output_path, overlayed_image)
         print(f"Saved: {output_path}")
         return section_dict
 
-
     def main(self):
         # Perform row-wise segmentation on all images in the input directory
         self.clear_directories()
         self.segment.rowWiseSegmentation()
-        sec_masks =self.segment.sectionWiseSegmentation()
+        sec_masks = self.segment.sectionWiseSegmentation()
         section_dict = self.Save_output_image(sec_masks)
-        output=self.segment.productSegmentation(section_dict)
+        output = self.segment.productSegmentation(section_dict)
         return output
-
-
-
 
 
 if __name__ == "__main__":

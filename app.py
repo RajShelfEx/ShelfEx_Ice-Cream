@@ -51,7 +51,7 @@ def clearLoggerFile():
     logFilePath = "app.log"
     # Check log file size
     if os.path.exists(logFilePath):
-        fileSizeMb = (os.path.getsize(logFilePath) / 1024)   #(1024 * 1024) --> this is for 1 MB
+        fileSizeMb = (os.path.getsize(logFilePath) / 1024)   # (1024 * 1024) --> this is for 1 MB
         if fileSizeMb > 500:  # If log file is greater than 500 KB
             # Empty the log file using redirection operator
             with open(logFilePath, "w") as file:
@@ -140,4 +140,3 @@ def shelfEx():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-    

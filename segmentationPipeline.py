@@ -40,8 +40,6 @@ class segmentation:
         except AttributeError as e:
             logging.error(f"Error processing masks: {e}")
             return orig_img, [], [], []
-
-        class_names = results.names
         processed_masks = []
         for i, mask in enumerate(masks):
             if hasattr(results.boxes, "cls"):
@@ -96,7 +94,7 @@ class segmentation:
         """
         os.makedirs(self.sectionImageDir, exist_ok=True)
 
-        # Dictionary to store updated processed masks for each image 
+        # Dictionary to store updated processed masks for each image
         filtered_processed_masks = {}
 
         for imageName in os.listdir(self.rowImageDir):
