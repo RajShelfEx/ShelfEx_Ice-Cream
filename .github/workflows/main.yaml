@@ -107,6 +107,7 @@ jobs:
           gcloud run deploy ice-cream-ai-backend \
             --image $IMAGE_NAME \
             --platform managed \
+            --set-env-vars=PORT=5000 \
             --region ${{ secrets.GCP_REGION }} \
             --allow-unauthenticated \
             --cpu=2 \
