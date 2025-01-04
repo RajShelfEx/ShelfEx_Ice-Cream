@@ -52,6 +52,7 @@ def Save_output_image(mask_data_dict):
     cv2.imwrite(output_path, overlayed_image)
     print(f"Saved: {output_path}")
     
+
 section_dict = {}
 for key, value in sec_masks.items():
     for ele in value:
