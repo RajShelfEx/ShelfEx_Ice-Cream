@@ -27,8 +27,5 @@ COPY . .
 RUN useradd -m appuser && chown -R appuser:appuser /usr/src/app
 USER appuser
 
-# Expose port
-EXPOSE 5000
-
-# Run with Gunicorn
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "--timeout", "120", "app:app"]
+# Run with Gunicorn using Cloud Run's PORT environment variable
+CMD exec gunicorn --bind :$PORT --workers 1 --timeout 120 app:app
