@@ -1,0 +1,120 @@
+name: CI/CD Pipeline for ice-cream Project
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint Code with flake8
+        run: flake8 .
+
+      - name: Run Unit Tests with pytest
+        run: pytest --cov=.
+
+  build-and-push-image:
+    name: Build and Push Docker Image
+    needs: integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Configure Docker for GCP Artifact Registry
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
+
+      - name: Check or Create Artifact Registry Repository
+        run: |
+          if gcloud artifacts repositories describe ${{ secrets.ARTIFACT_REPO }} --location=${{ secrets.GCP_REGION }} >/dev/null 2>&1; then
+            echo "Repository already exists."
+          else
+            echo "Repository does not exist. Creating..."
+            gcloud artifacts repositories create ${{ secrets.ARTIFACT_REPO }} \
+              --repository-format=docker \
+              --location=${{ secrets.GCP_REGION }} \
+              --description="Docker repository for ice-cream ai backend"
+          fi
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Build Docker image
+        env:
+          IMAGE_NAME: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/ice-cream-app:${{ github.sha }}
+        run: |
+          echo "Building Docker image with tag: $IMAGE_NAME"
+          docker build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache -t $IMAGE_NAME .
+
+      - name: Push Docker image
+        env:
+          IMAGE_NAME: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/ice-cream-app:${{ github.sha }}
+        run: |
+          echo "Pushing Docker image to $IMAGE_NAME"
+          docker push $IMAGE_NAME
+
+  deploy:
+    name: Deploy to Cloud Run
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Deploy to Cloud Run
+        env:
+          IMAGE_NAME: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/ice-cream-app:${{ github.sha }}
+        run: |
+          echo "Deploying image $IMAGE_NAME to Cloud Run"
+          gcloud run deploy ice-cream-ai-backend \
+            --image $IMAGE_NAME \
+            --platform managed \
+            --region ${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --cpu=2 \
+            --memory=4Gi \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+

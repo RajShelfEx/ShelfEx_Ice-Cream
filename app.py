@@ -1,14 +1,12 @@
 import os
 import time
-import base64
 import config
 import logging
 import requests
 import subprocess
 from flask import Flask, request, jsonify
-from utils import download_and_unzip,modelsConfig, checkDir
-from utils import save_to_csv , csv_to_dict  # save_to_csv is a function
-from SKUs import resuit_format # resuit_format is a dictionary
+from utils import download_and_unzip,modelsConfig, checkDir,imageToBase64,save_to_csv , csv_to_dict 
+from SKUs import result_format # resuit_format is a dictionary
 from mainPipeline import Result
 from config import FINAL_OUTPUT_DIR
 from flask_cors import CORS
@@ -52,20 +50,6 @@ def clearLoggerFile():
             # Optional: Log that the log file was cleared
             logger.info("Log file exceeded 500 KB and was cleared.")
 
-
-def imageToBase64(outputImagePath):
-    """
-    Convert image to Base64 link
-
-    Args:
-        outputImagePath (str): Detected image path
-
-    Returns:
-        str : Image Base64 link
-    """
-    with open(outputImagePath, 'rb') as imageFile:
-        encodedImage = base64.b64encode(imageFile.read()).decode('utf-8')
-    return encodedImage
 @app.route('/ShelfEx', methods=['POST'])
 def shelfEx():
     if request.method == 'POST':
@@ -108,14 +92,14 @@ def shelfEx():
                 # print(detectionResult)
                 ####################### MODIFY THE RESULT IN TABULAR-FORM ###########################
                 # take result format dict
-                final_image_result = resuit_format.copy()
+                final_image_result = result_format.copy()
                 # update result format dict according to detection result
                 for key, value in detectionResult.items():
                     if key != "image":
                         bin_name = key.split("-")[0]
                         bin_occ = key.split("-")[1]
                         sku_name = value
-                        index = resuit_format["Bin"].index(bin_name)
+                        index = result_format["Bin"].index(bin_name)
                         # update result
                         final_image_result["Bin_Occupancy"][index] = f"{bin_occ} %"
                         final_image_result["SKU_Detection"][index] = "Yes"

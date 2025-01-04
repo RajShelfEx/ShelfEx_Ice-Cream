@@ -10,6 +10,8 @@ import config
 from SKUs import productSku,productSkuList,competitorsSkuList
 import logging
 import zipfile
+import base64
+
 logger = logging.getLogger(__name__)
 
 class SaveOutputImage:
@@ -165,6 +167,19 @@ modelsConfig = [
     },
 ]
 
+def imageToBase64(outputImagePath):
+    """
+    Convert image to Base64 link
+
+    Args:
+        outputImagePath (str): Detected image path
+
+    Returns:
+        str : Image Base64 link
+    """
+    with open(outputImagePath, 'rb') as imageFile:
+        encodedImage = base64.b64encode(imageFile.read()).decode('utf-8')
+    return encodedImage
 
 
 def checkDir(dirPath):
