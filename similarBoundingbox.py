@@ -38,7 +38,7 @@ class similarBoundingBoxes:
                 for idx in indices:
                     if idx != MaxConfIndex:
                         KeepIndices.discard(idx)
-        
+
         # Convert KeepIndices to sorted list
         KeepIndices = sorted(list(KeepIndices))
         return KeepIndices
@@ -57,7 +57,7 @@ class similarBoundingBoxes:
 
         Returns:
         - KeepIndices (list[int]): A sorted list of indices of bounding boxes to keep based on highest confidence within similar groups.
-        
+
         Process:
         1. Initializes a set of indices to keep.
         2. Iterates over groups of similar bounding boxes.
@@ -76,7 +76,9 @@ class similarBoundingBoxes:
                     visited.add(current)
                     group.append(current)
                     # Find neighbors by checking which rows are similar
-                    neighbors = torch.nonzero(similar_matrix[current], as_tuple=True)[0].tolist()
+                    neighbors = torch.nonzero(similar_matrix[current], as_tuple=True)[
+                        0
+                    ].tolist()
                     for neighbor in neighbors:
                         if neighbor not in visited:
                             stack.append(neighbor)
@@ -86,9 +88,9 @@ class similarBoundingBoxes:
                 group = []
                 dfs(row, group)
                 groups.append(group)
-        
+
         return groups
-       
+
     def IndexesOfSimilarCord(self, boxes, confidences, SkuIndexes):
         """
         Filters out similar bounding boxes based on a defined similarity threshold.
@@ -109,7 +111,7 @@ class similarBoundingBoxes:
         3. Groups similar bounding boxes.
         4. Filters out groups with fewer bounding boxes than a minimum required number.
         5. Keeps bounding boxes from the filtered groups and removes others.
-        
+
         """
         # Define the similarity threshold
         threshold = 2
@@ -132,7 +134,7 @@ class similarBoundingBoxes:
         for group in FilteredGroups:
             print(f"Group of {len(group)} similar rows: {group}")
             SimilarIndices.append(group)
-            
+
         if len(SimilarIndices) == 0:
             # No duplicates bounding boxes
             return boxes, confidences, SkuIndexes
@@ -140,6 +142,3 @@ class similarBoundingBoxes:
             KeepIndices = self.FilterBoxes(boxes, confidences, SimilarIndices)
             SkuIndexes = [SkuIndexes[i] for i in KeepIndices]
             return boxes[KeepIndices], confidences[KeepIndices], SkuIndexes
-            
-            
-

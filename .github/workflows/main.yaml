@@ -34,7 +34,7 @@ jobs:
           pip install flake8 pytest
 
       - name: Lint Code with flake8
-        run: flake8 --ignore=E501,E266,W292 .
+        run: flake8 --ignore=E501,E266,W292.W293 .
 
       - name: Run Unit Tests with pytest
         run: pytest --cov=.

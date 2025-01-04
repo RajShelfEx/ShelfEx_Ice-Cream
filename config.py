@@ -1,30 +1,33 @@
 import os
-import glob
 
 ######################## PATHS ###############################
 # data dir
-DATA_DIR = os.path.join(os.getcwd(), 'data')
+DATA_DIR = os.path.join(os.getcwd(), "data")
 # input image dir
-INPUT_IMAGES_DIR = os.path.join(DATA_DIR, 'input_images')
+INPUT_IMAGES_DIR = os.path.join(DATA_DIR, "input_images")
 # save row-wise images
-ROW_WISE_IMAGES_DIR = os.path.join(DATA_DIR, 'row_wise_images')
+ROW_WISE_IMAGES_DIR = os.path.join(DATA_DIR, "row_wise_images")
 # save section-wise images
-SECTION_WISE_IMAGES_DIR = os.path.join(DATA_DIR, 'section_wise_images')
+SECTION_WISE_IMAGES_DIR = os.path.join(DATA_DIR, "section_wise_images")
 # save product-wise images
-PRODUCT_WISE_IMAGES_DIR = os.path.join(DATA_DIR, 'product_wise_images')
+PRODUCT_WISE_IMAGES_DIR = os.path.join(DATA_DIR, "product_wise_images")
 # final output images
-FINAL_OUTPUT_DIR = os.path.join(DATA_DIR, 'final_output_images')
+FINAL_OUTPUT_DIR = os.path.join(DATA_DIR, "final_output_images")
 
 # Model weights dir
-MODEL_WEIGHTS_DIR = os.path.join(DATA_DIR, 'checkpoints')
+MODEL_WEIGHTS_DIR = os.path.join(DATA_DIR, "checkpoints")
 # product_detection_weight model configuration
-ROW_WISE_MODEL_WEIGHTS = os.path.join(MODEL_WEIGHTS_DIR, 'row_wise_weight/weights/last.pt')
+ROW_WISE_MODEL_WEIGHTS = os.path.join(
+    MODEL_WEIGHTS_DIR, "row_wise_weight/weights/last.pt"
+)
 # row_wise_weight model configuration
-SECTION_WISE_MODEL_WEIGHTS = os.path.join(MODEL_WEIGHTS_DIR, 'section_wise_weight/weights/last.pt')
+SECTION_WISE_MODEL_WEIGHTS = os.path.join(
+    MODEL_WEIGHTS_DIR, "section_wise_weight/weights/last.pt"
+)
 # product_detection_weight model configuration
-PRODUCT_SEGMENTATION_MODEL_WEIGHTS = os.path.join(MODEL_WEIGHTS_DIR, 'product_wise_weight/weights/last.pt')
-
-
+PRODUCT_SEGMENTATION_MODEL_WEIGHTS = os.path.join(
+    MODEL_WEIGHTS_DIR, "product_wise_weight/weights/last.pt"
+)
 
 
 # Model parameters
@@ -35,13 +38,25 @@ OUTPUT_IMAGE_SIZE = 720
 
 # Download Model weights
 # Example usage
-ROW_MODEL_URL = 'https://drive.google.com/file/d/1bPX5sgP8vAYtRzwrGJ2OJrmci2_l9P3S/view?usp=sharing'
-SECTION_MODEL_URL = 'https://drive.google.com/file/d/13zTs3dXq1ky0o0QU99qzW4qMm1yiEOWz/view?usp=sharing'
-PRODUCT_SEG_MODEL_URL = 'https://drive.google.com/file/d/1ttVcFWfqVwQbSFU9AOtYwVyTtQFmpovj/view?usp=sharing'
-DOWNLOAD_ROW_MODEL_PATH = 'data/row.zip'  # Local path for the downloaded zip file
-DOWNLOAD_SECTION_MODEL_PATH = 'data/section.zip'  # Local path for the downloaded zip file
-DOWNLOAD_PRODUCT_SEG_MODEL_PATH = 'data/product_seg.zip'  # Local path for the downloaded zip file
-DOWNLOAD_PRODUCT_MODEL_PATH = 'data/product.zip'  # Local path for the downloaded zip file
-EXTRACT_ROW_MODEL_DIR = 'data/checkpoints/row_wise_weight/'  # Directory where the zip file should be extracted 
-EXTRACT_SECTION_MODEL_DIR = 'data/checkpoints/section_wise_weight/'  # Directory where the zip file should be extracted
-EXTRACT_PRODUCT_SEG_MODEL_DIR = 'data/checkpoints/product_wise_weight/'  # Directory where the zip file should be extracted
+ROW_MODEL_URL = (
+    "https://drive.google.com/file/d/1bPX5sgP8vAYtRzwrGJ2OJrmci2_l9P3S/view?usp=sharing"
+)
+SECTION_MODEL_URL = (
+    "https://drive.google.com/file/d/13zTs3dXq1ky0o0QU99qzW4qMm1yiEOWz/view?usp=sharing"
+)
+PRODUCT_SEG_MODEL_URL = (
+    "https://drive.google.com/file/d/1ttVcFWfqVwQbSFU9AOtYwVyTtQFmpovj/view?usp=sharing"
+)
+DOWNLOAD_ROW_MODEL_PATH = "data/row.zip"  # Local path for the downloaded zip file
+DOWNLOAD_SECTION_MODEL_PATH = (
+    "data/section.zip"  # Local path for the downloaded zip file
+)
+DOWNLOAD_PRODUCT_SEG_MODEL_PATH = (
+    "data/product_seg.zip"  # Local path for the downloaded zip file
+)
+DOWNLOAD_PRODUCT_MODEL_PATH = (
+    "data/product.zip"  # Local path for the downloaded zip file
+)
+EXTRACT_ROW_MODEL_DIR = "data/checkpoints/row_wise_weight/"  # Directory where the zip file should be extracted
+EXTRACT_SECTION_MODEL_DIR = "data/checkpoints/section_wise_weight/"  # Directory where the zip file should be extracted
+EXTRACT_PRODUCT_SEG_MODEL_DIR = "data/checkpoints/product_wise_weight/"  # Directory where the zip file should be extracted
