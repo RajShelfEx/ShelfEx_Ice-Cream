@@ -5,10 +5,16 @@ import logging
 import requests
 import subprocess
 from flask import Flask, request, jsonify
-from utils import download_and_unzip,modelsConfig, checkDir,imageToBase64,save_to_csv , csv_to_dict 
-from SKUs import result_format # resuit_format is a dictionary
+from utils import (
+    download_and_unzip,
+    modelsConfig,
+    checkDir,
+    imageToBase64,
+    save_to_csv,
+    csv_to_dict,
+)
+from SKUs import result_format  # resuit_format is a dictionary
 from mainPipeline import Result
-from config import FINAL_OUTPUT_DIR
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -33,28 +39,33 @@ productRecognition = Result()
 logger = logging.getLogger(__name__)
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
-logging.basicConfig(filename='app.log', level=logging.INFO,
-                    format='%(asctime)s [%(levelname)s]: %(message)s')
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+)
+
 
 def clearLoggerFile():
     # Define log file path
-    logFilePath = 'app.log'
+    logFilePath = "app.log"
     # Check log file size
     if os.path.exists(logFilePath):
-        fileSizeMb = os.path.getsize(logFilePath) / 1024  #  (1024 * 1024) --> this is for 1 MB
+        fileSizeMb = (os.path.getsize(logFilePath) / 1024)   #(1024 * 1024) --> this is for 1 MB
         if fileSizeMb > 500:  # If log file is greater than 500 KB
             # Empty the log file using redirection operator
-            with open(logFilePath, 'w') as file:
-                subprocess.run(['echo', '-n'], stdout=file)
+            with open(logFilePath, "w") as file:
+                subprocess.run(["echo", "-n"], stdout=file)
 
             # Optional: Log that the log file was cleared
             logger.info("Log file exceeded 500 KB and was cleared.")
 
-@app.route('/ShelfEx', methods=['POST'])
+
+@app.route("/ShelfEx", methods=["POST"])
 def shelfEx():
-    if request.method == 'POST':
+    if request.method == "POST":
         # image url list from the JSON request
-        imageUrlList = request.json.get('url')
+        imageUrlList = request.json.get("url")
         try:
             # Clear app.log file if greater than 500 KB
             clearLoggerFile()
@@ -72,20 +83,19 @@ def shelfEx():
             checkDir(config.FINAL_OUTPUT_DIR)
 
             finalResult = []
-            detection = {}
-            inputImage = ''
+            inputImage = ""
             # iterate each image url
             for imageUrl in imageUrlList:
                 # Download image
                 response = requests.get(imageUrl)
                 if response.status_code == 200:
                     # extract image name
-                    imageName = imageUrl.split('/')[-1]
-                    imagePath = os.path.join(inputImageDir, f'{imageName}')
+                    imageName = imageUrl.split("/")[-1]
+                    imagePath = os.path.join(inputImageDir, f"{imageName}")
                     inputImage = imagePath
-                    with open(imagePath, 'wb') as f:
+                    with open(imagePath, "wb") as f:
                         f.write(response.content)
-                    logging.info(f'Image downloaded and saved to {imagePath}')
+                    logging.info(f"Image downloaded and saved to {imagePath}")
 
                 ############################ DETECTION PROCESS #################################
                 detectionResult = productRecognition.main()
@@ -106,26 +116,28 @@ def shelfEx():
                         # if sku_name == "Product is blured or not in SKU List!":
                         #     final_image_result["SKU_Name"][index] = "Not Identified"
                         final_image_result["SKU_Name"][index] = sku_name
-                
+
                 # create csv file
                 save_to_csv(final_image_result, "result_format.csv")
                 # Example usage
                 csv_file = "result_format.csv"  # Replace with the actual file path
                 final_result_dict = csv_to_dict(csv_file)
-                logging.info(f'Detection Results: {final_result_dict}')
+                logging.info(f"Detection Results: {final_result_dict}")
                 ############################### FINAL RESULTS ################################
 
                 encodedInputImage = imageToBase64(inputImage)
-                final_result_dict['image'] = encodedInputImage
+                final_result_dict["image"] = encodedInputImage
                 finalResult.append(final_result_dict)
 
             totalTime = time.time() - start
-            logging.info(f'Detection Time : {totalTime}')
+            logging.info(f"Detection Time : {totalTime}")
             return jsonify({"Detection Result": finalResult}), 200
 
         except Exception as e:
-            logging.error(f'[EXCEPTION]: {e}')
+            logging.error(f"[EXCEPTION]: {e}")
             return jsonify(f"Image could not be processed. Please try again.{e}")
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+    

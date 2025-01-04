@@ -7,16 +7,16 @@ import shutil
 import random
 import gdown
 import config
-from SKUs import productSku,productSkuList,competitorsSkuList
-import logging
+from SKUs import productSkuList, competitorsSkuList
 import zipfile
 import base64
 
 logger = logging.getLogger(__name__)
 
+
 class SaveOutputImage:
     """
-    A utility class to draw bounding boxes, labels, and confidence scores on images 
+    A utility class to draw bounding boxes, labels, and confidence scores on images
     for visualization of object detection results.
     """
 
@@ -42,7 +42,9 @@ class SaveOutputImage:
             colors[label] = color
         return colors
 
-    def DrawRectanglesWithLabels(self, ImagePath, boxes, confidences, labels, OutputPath):
+    def DrawRectanglesWithLabels(
+        self, ImagePath, boxes, confidences, labels, OutputPath
+    ):
         """
         Draws bounding boxes, labels, and confidence scores on the image and saves it.
 
@@ -57,7 +59,7 @@ class SaveOutputImage:
 
         for box, confidence, label in zip(boxes, confidences, labels):
             x1, y1, x2, y2 = map(int, box)  # Convert coordinates to integers
-            
+
             # Determine color based on label category
             if label in productSkuList:
                 color = (0, 255, 0)  # GREEN
@@ -65,18 +67,26 @@ class SaveOutputImage:
                 color = (0, 0, 255)  # RED
             else:
                 color = (255, 0, 0)  # BLUE
-            
+
             # Draw bounding box
             cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
 
             # Create label text with confidence score
-            LabelText = f'{label} {confidence:.2f}'
+            LabelText = f"{label} {confidence:.2f}"
 
             # Calculate text size and position
             (w, h), _ = cv2.getTextSize(LabelText, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
             cv2.rectangle(image, (x1, y1 - h - 10), (x1 + w, y1), color, -1)
-            cv2.putText(image, LabelText, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-        
+            cv2.putText(
+                image,
+                LabelText,
+                (x1, y1 - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0, 0, 0),
+                1,
+            )
+
         cv2.imwrite(OutputPath, image)
 
     def DrawRectangles(self, ImagePath, boxes, confidences, labels, OutputPath):
@@ -94,7 +104,7 @@ class SaveOutputImage:
 
         for box, confidence, label in zip(boxes, confidences, labels):
             x1, y1, x2, y2 = map(int, box)  # Convert coordinates to integers
-            
+
             # Determine color based on label category
             if label in productSkuList:
                 color = (0, 255, 0)  # GREEN
@@ -102,7 +112,7 @@ class SaveOutputImage:
                 color = (0, 0, 255)  # RED
             else:
                 color = (255, 0, 0)  # BLUE
-            
+
             # Draw bounding box
             cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
 
@@ -112,7 +122,16 @@ class SaveOutputImage:
         OutputPath = f"{OutputPathImage}_1.{ImageFormat}"
         cv2.imwrite(OutputPath, image)
 
-    def SaveOutput(self, BoundingBoxes, confidences, SkuIndexes, SkuIndexesDict, SkuNames, InputImagePath, SaveOutputImagePath):
+    def SaveOutput(
+        self,
+        BoundingBoxes,
+        confidences,
+        SkuIndexes,
+        SkuIndexesDict,
+        SkuNames,
+        InputImagePath,
+        SaveOutputImagePath,
+    ):
         """
         Saves the output image with bounding boxes and labels drawn on it.
 
@@ -130,23 +149,27 @@ class SaveOutputImage:
         labels = [SkuNames[int(sku)] for sku in SkuIndexes]
 
         # Draw and save annotated images
-        self.DrawRectangles(InputImagePath, boxes, confidences, labels, SaveOutputImagePath)
-        self.DrawRectanglesWithLabels(InputImagePath, boxes, confidences, labels, SaveOutputImagePath)
+        self.DrawRectangles(
+            InputImagePath, boxes, confidences, labels, SaveOutputImagePath
+        )
+        self.DrawRectanglesWithLabels(
+            InputImagePath, boxes, confidences, labels, SaveOutputImagePath
+        )
 
 
 def download_and_unzip(model_url, output_path, extract_to):
-    logger.info(f"Downloading Model weights in zip format")
+    logger.info("Downloading Model weights in zip format")
     gdown.download(model_url, output_path, quiet=False, fuzzy=True)
-    
-    if output_path.endswith('.zip'):
-        logger.info(f"Unzipping Model weights .....")
-        with zipfile.ZipFile(output_path, 'r') as zip_ref:
+
+    if output_path.endswith(".zip"):
+        logger.info("Unzipping Model weights .....")
+        with zipfile.ZipFile(output_path, "r") as zip_ref:
             zip_ref.extractall(extract_to)
-        logger.info(f"Unzipped model file successfully! .....")
+        logger.info("Unzipped model file successfully! .....")
         os.remove(output_path)
     else:
-        print('Downloaded file is not a zip file.')
-        logger.error(f"Downloaded model file is not a zip file.")
+        print("Downloaded file is not a zip file.")
+        logger.error("Downloaded model file is not a zip file.")
 
 
 modelsConfig = [
@@ -167,6 +190,7 @@ modelsConfig = [
     },
 ]
 
+
 def imageToBase64(outputImagePath):
     """
     Convert image to Base64 link
@@ -177,21 +201,21 @@ def imageToBase64(outputImagePath):
     Returns:
         str : Image Base64 link
     """
-    with open(outputImagePath, 'rb') as imageFile:
-        encodedImage = base64.b64encode(imageFile.read()).decode('utf-8')
+    with open(outputImagePath, "rb") as imageFile:
+        encodedImage = base64.b64encode(imageFile.read()).decode("utf-8")
     return encodedImage
 
 
 def checkDir(dirPath):
     ####################### IMAGE DIRECTORY ###########################
-    
+
     # Check if the directory exists
     if not os.path.exists(dirPath):
         os.makedirs(dirPath)
-        logging.info(f'Created directory: {dirPath}')
+        logging.info(f"Created directory: {dirPath}")
     else:
-        logging.info(f'Directory already exists: {dirPath}')
-        
+        logging.info(f"Directory already exists: {dirPath}")
+
         try:
             # Remove all contents of the directory
             for filename in os.listdir(dirPath):
@@ -200,7 +224,7 @@ def checkDir(dirPath):
                     os.unlink(file_path)  # Remove file or symbolic link
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)  # Remove directory
-            logging.info(f'Cleared contents of the directory: {dirPath}')
+            logging.info(f"Cleared contents of the directory: {dirPath}")
         except Exception as e:
             logging.error(f"Failed to delete contents of {dirPath}. Reason: {e}")
 
@@ -214,17 +238,17 @@ def save_to_csv(data_dict, file_name="result_format.csv"):
     - file_name (str): The name of the output CSV file. Default is 'result_format.csv'.
     """
     try:
-        with open(file_name, mode='w', newline='') as file:
+        with open(file_name, mode="w", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=data_dict.keys())
-            
+
             # Write header
             writer.writeheader()
-            
+
             # Write rows
             for i in range(len(data_dict["Bin"])):
                 row = {key: data_dict[key][i] for key in data_dict}
                 writer.writerow(row)
-        
+
         print(f"CSV file '{file_name}' created successfully.")
     except Exception as e:
         print(f"Failed to create CSV file. Error: {e}")
@@ -243,11 +267,10 @@ def csv_to_dict(csv_file):
     """
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file)
-    
+
     # Create the dictionary
     bin_dict = {
         row["Bin"]: [row["Bin_Occupancy"], row["SKU_Detection"], row["SKU_Name"]]
         for _, row in df.iterrows()
     }
-    
     return bin_dict
