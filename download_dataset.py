@@ -4,4 +4,4 @@ from roboflow import Roboflow
 rf = Roboflow(api_key="roboflow")
 project = rf.workspace("sample-aoipo").project("masterdataset")
 version = project.version(3)
-dataset = version.download("yolov11")            
+dataset = version.download("yolov11")
