@@ -39,8 +39,8 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 # Configure Gunicorn
 CMD exec gunicorn \
     --bind :$PORT \
-    --workers 2 \
-    --threads 8 \
+    --workers 1 \
+    --threads 4 \
     --timeout 120 \
     --worker-class gthread \
     --worker-tmp-dir /dev/shm \
